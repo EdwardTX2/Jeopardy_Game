@@ -2,6 +2,8 @@
 initCatRow()
 initBoard()
 
+document.querySelector('button').addEventListener('click', buildCategories)
+//create category rows
 function initCatRow() {
     let catRow = document.getElementById('category-row')
 
@@ -12,7 +14,7 @@ function initCatRow() {
     }
 
 }
-
+// create clue board
 function initBoard() {
     let board = document.getElementById('clue-board')
 
@@ -41,6 +43,8 @@ function randInt() {
     return Math.floor(Math.random() * (18418) + 1) // 8418 is maximum category for jeopardy service
 }
 
+let catArray = []
+// call api
 function buildCategories() {
     const fetchReq1 = fetch(`https://jservice.io/api/category?&id=${randInt()}`
     ).then((res) => res.json());
@@ -59,10 +63,31 @@ function buildCategories() {
 
     allData.then((res) => {
         console.log(res)
+        catArray = res
+        setCategories(catArray)
     })
 
 }
 
-function getClue() {
-    console.log('have a nice day')
+// load categories to the board
+
+function setCategories(catArray) {
+    let element = document.getElementById('category-row')
+        let children = element.children;
+        for (let i = 0; i < children.length; i++) {
+            children[i].innerHTML = catArray[i].title
+        }
+}
+
+function getClue(event) {
+    let child = event.currentTarget
+    child.classList.add('clicked-box')
+    let boxValue = child.innerHTML.slice(1) // grab box value without the $ sign
+    let parent = child.parentNode
+    let index = Array.prototype.findIndex.call(parent.children, (c) => c === child)
+    let cluesList = catArray[index].clues
+    let clue = cluesList.find(obj => {
+        return obj.value == boxValue
+    })
+    showQuestion(clue, child, boxValue)
 }
