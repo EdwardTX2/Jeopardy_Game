@@ -89,5 +89,37 @@ function getClue(event) {
     let clue = cluesList.find(obj => {
         return obj.value == boxValue
     })
+    console.log(clue)
     showQuestion(clue, child, boxValue)
+}
+
+// show question to user and get their answer
+
+function showQuestion(clue, target, boxValue) {
+    let userAnswer = prompt(clue.question).toLowerCase()
+    let correctAnswer = clue.answer.toLowerCase().replace(/<\/?[^>]+(>|$)/g,"")
+    let possiblePoints = +(boxValue) // converts a string to a number
+    target.innerHTML = clue.answer
+    target.removeEventListener('click', getClue)
+    evaluateAnswer(userAnswer, correctAnswer, possiblePoints)
+}
+
+// Evaluate answer and show to user to confirm
+
+function evaluateAnswer(userAnswer, correctAnswer, possiblePoints) {
+    let checkAnswer = (userAnswer == correctAnswer) ? 'correct' : 'incorrect'
+    let confirmAnswer = confirm(`For $${possiblePoints}, you answered "${userAnswer}", and the correct answer was "${correctAnswer}". Your answer appears to be ${checkAnswer}. Click OK to accept or click Cancel if the answer was not properly evaluated.`)
+    awardPoints(checkAnswer, confirmAnswer, possiblePoints)
+}
+
+function awardPoints(checkAnswer, confirmAnswer, possiblePoints) {
+    if (!(checkAnswer == 'incorrect' && confirmAnswer == true)) {
+        // award points
+        let target = document.getElementById('score')
+        let currentScore = +(target.innerText)
+        currentScore += possiblePoints
+        target.innerText = currentScore
+    } else {
+        alert('No points awarded.')
+    }
 }
