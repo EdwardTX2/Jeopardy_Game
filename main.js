@@ -38,14 +38,18 @@ function initBoard() {
     }
 
 }
-
+// CALL API
 function randInt() {
     return Math.floor(Math.random() * (18418) + 1) // 8418 is maximum category for jeopardy service
 }
 
 let catArray = []
-// call api
+
 function buildCategories() {
+
+    if (!(document.getElementById('category-row').firstChild.innerText == '')) {
+        resetBoard()
+    }
     const fetchReq1 = fetch(`https://jservice.io/api/category?&id=${randInt()}`
     ).then((res) => res.json());
     const fetchReq2 = fetch(`https://jservice.io/api/category?&id=${randInt()}`
@@ -67,6 +71,22 @@ function buildCategories() {
         setCategories(catArray)
     })
 
+}
+
+// reset board and $$ amount if needed
+
+function resetBoard() {
+    let clueParent = document.getElementById('clue-board')
+    while (clueParent.firstChild) {
+        clueParent.removeChild(clueParent.firstChild)
+    }
+    let catParent = document.getElementById('category-row')
+    while (catParent.firstChild) {
+        catParent.removeChild(catParent.firstChild)
+    }
+    document.getElementById('score').innerText = 0
+    initBoard()
+    initCatRow()
 }
 
 // load categories to the board
